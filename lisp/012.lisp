@@ -1,30 +1,21 @@
 ;; What is the value of the first triangle number to have over five hundred divisors?
 
-(defun trianglep (number)
-  "Return t if number is a triangle number, nil otherwise."
-  (let ((sum 0))
-    (loop for i from 1 to number do
-          (setf sum (+ sum i))
-          (when (= sum number)
-            (return t)))
-    nil))
+(defparameter *h* (make-hash-table))
 
-(defun next-triangle (number)
-  (loop for n from number when (trianglep n) return n))
+(defun num-divisors (n) 
+  (let ((c 0))
+    (loop for i from 1 to (isqrt n) do 
+          (when (zerop (mod n i)) 
+            (if (= i (/ n i))
+                (incf c)
+                (incf c 2))))
+    c))
 
-
-
-;; want (do-primes p 0 19)
-(defmacro do-primes ((var start end) &body body)
-  `(do ((,var (next-prime ,start) (next-prime (+ 1 ,var))))
-     ((> ,var ,end))
-     ,@body))
-
-(defun sum-of-primes (start end)
-  (let ((sum 0))
-    (do-primes (p start end)
-      (setf sum (+ sum p)))
-    sum))
-
-
-
+(defun first-to-500 ()
+  (let ((i 0)
+        (triangle 0))
+    (loop do 
+          (incf i)
+          (incf triangle i)
+          (when (> (num-divisors triangle) 500) 
+            (return triangle)))))
